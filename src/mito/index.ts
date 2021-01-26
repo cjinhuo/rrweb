@@ -1,25 +1,35 @@
 import { pack } from '../packer';
 import record from '../record';
 import { getMitoGlobalVar, variableTypeDetection } from './helper';
+import { worker } from './webWork';
 
 export const isBrowserEnv = variableTypeDetection.isWindow(
   typeof window !== 'undefined' ? window : 0,
 );
-if (isBrowserEnv) {
-  let __MITO__ = null;
-  window.addEventListener('load', function () {
-    setTimeout(() => {
-      __MITO__ = getMitoGlobalVar();
-      if (__MITO__) {
-        __MITO__.record = [];
-        startRecord(__MITO__);
-      }
-    }, 500);
-  });
+if (isBrowserEnv && Worker) {
+  webWorkTestCpu(init);
+}
+
+function webWorkTestCpu(callback: Function) {
+  worker.onmessage = function (e) {
+    if (e.data) {
+      setTimeout(() => {
+        callback();
+      }, 100);
+    }
+  };
+  worker.postMessage(25);
+}
+
+function init() {
+  let __MITO__ = getMitoGlobalVar();
+  if (__MITO__) {
+    __MITO__.record = [];
+    startRecord(__MITO__);
+  }
 }
 
 function startRecord(mitoObj: { record: any[] }) {
-  // 每次重写数列化前的数组长度
   console.log('mito record start');
   let endNum = 0;
   let checkoutNum = 0;
