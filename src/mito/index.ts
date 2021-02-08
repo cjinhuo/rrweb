@@ -54,11 +54,14 @@ function startRecord(mitoObj: { record: any[] }) {
         Click: true,
         ContextMenu: false,
         DblClick: false,
-        Focus: false,
+        Focus: true,
         Blur: false,
-        TouchStart: false,
-        TouchEnd: false,
+        TouchStart: true,
+        TouchEnd: true,
       },
+      scroll: 160,
+      input: 'last',
+      mousemove: true,
     },
   });
 }
